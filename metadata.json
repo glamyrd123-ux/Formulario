@@ -1,0 +1,6 @@
+{
+  "name": "Solicitud de Diseño Web y Marca",
+  "description": "Formulario de solicitud de información para el diseño y desarrollo de tu página web e identidad de marca.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

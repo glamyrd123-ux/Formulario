@@ -1,0 +1,170 @@
+{
+  "entities": {
+    "SolicitudWeb": {
+      "title": "Solicitud de Diseño Web y Marca",
+      "description": "Registro completo de solicitud de página web alineado a las 22 columnas de la Base de Datos. Solo nombre, teléfono y correo son estrictamente obligatorios.",
+      "type": "object",
+      "properties": {
+        "fechaSolicitud": {
+          "type": "string",
+          "description": "Fecha de Solicitud legible (YYYY-MM-DD HH:mm)",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "nombreCompleto": {
+          "type": "string",
+          "description": "Nombre completo del solicitante",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "empresaProyecto": {
+          "type": "string",
+          "description": "Empresa, negocio o proyecto",
+          "maxLength": 160
+        },
+        "actividad": {
+          "type": "string",
+          "description": "A qué se dedica el negocio o proyecto",
+          "maxLength": 300
+        },
+        "telefono": {
+          "type": "string",
+          "description": "Teléfono o WhatsApp de contacto",
+          "minLength": 7,
+          "maxLength": 60
+        },
+        "correo": {
+          "type": "string",
+          "description": "Correo electrónico principal",
+          "minLength": 5,
+          "maxLength": 160
+        },
+        "direccion": {
+          "type": "string",
+          "description": "Dirección física o ubicación del negocio",
+          "maxLength": 500
+        },
+        "descripcionMarca": {
+          "type": "string",
+          "description": "Descripción de la marca",
+          "maxLength": 2000
+        },
+        "objetivoWeb": {
+          "type": "string",
+          "description": "Objetivo de la web",
+          "maxLength": 300
+        },
+        "identidadVisual": {
+          "type": "string",
+          "description": "Identidad visual actual",
+          "maxLength": 200
+        },
+        "estiloApariencia": {
+          "type": "string",
+          "description": "Estilo o apariencia deseada",
+          "maxLength": 400
+        },
+        "tipoPaginaWeb": {
+          "type": "string",
+          "description": "Tipo de página web",
+          "maxLength": 300
+        },
+        "productosServicios": {
+          "type": "string",
+          "description": "Productos o servicios a presentar",
+          "maxLength": 3000
+        },
+        "seccionesIncluir": {
+          "type": "string",
+          "description": "Secciones a incluir",
+          "maxLength": 600
+        },
+        "funcionalidadesNecesarias": {
+          "type": "string",
+          "description": "Funcionalidades necesarias",
+          "maxLength": 600
+        },
+        "dominioPaginaActual": {
+          "type": "string",
+          "description": "Dominio o página actual (incluyendo el dominio escrito si aplica)",
+          "maxLength": 400
+        },
+        "materialesDisponibles": {
+          "type": "string",
+          "description": "Materiales disponibles",
+          "maxLength": 600
+        },
+        "referenciasWeb": {
+          "type": "string",
+          "description": "Referencias web",
+          "maxLength": 2000
+        },
+        "redesSociales": {
+          "type": "string",
+          "description": "Redes sociales",
+          "maxLength": 1000
+        },
+        "fechaEntregaDeseada": {
+          "type": "string",
+          "description": "Fecha de entrega deseada",
+          "maxLength": 40
+        },
+        "detallesAdicionales": {
+          "type": "string",
+          "description": "Detalles adicionales",
+          "maxLength": 3000
+        },
+        "enlacesAdjuntos": {
+          "type": "string",
+          "description": "Enlaces de Imágenes / Adjuntos",
+          "maxLength": 2000
+        },
+        "estado": {
+          "type": "string",
+          "description": "Estado de seguimiento de la solicitud",
+          "enum": ["Nueva", "En revisión", "Propuesta enviada", "Completada"],
+          "maxLength": 30
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Marca temporal del servidor al crear la solicitud"
+        }
+      },
+      "required": [
+        "fechaSolicitud",
+        "nombreCompleto",
+        "telefono",
+        "correo",
+        "estado",
+        "createdAt"
+      ]
+    },
+    "AdminUser": {
+      "title": "Administrador",
+      "description": "Registro de administrador autorizado.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["email", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/solicitudes/{solicitudId}": {
+      "schema": {"$ref": "#/entities/SolicitudWeb"},
+      "description": "Almacena todas las solicitudes enviadas desde el formulario con las 22 columnas de la base de datos."
+    },
+    "/admins/{adminId}": {
+      "schema": {"$ref": "#/entities/AdminUser"},
+      "description": "Lista de administradores autorizados para consultar y gestionar solicitudes."
+    }
+  }
+}

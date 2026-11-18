@@ -1,0 +1,133 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        (request.auth.token.email == 'glamyrd123@gmail.com' && request.auth.token.email_verified == true) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isStrLen(val, min, max) {
+      return val is string && val.size() >= min && val.size() <= max;
+    }
+
+    function isValidSolicitud(data) {
+      return data.keys().hasAll([
+        'fechaSolicitud',
+        'nombreCompleto',
+        'empresaProyecto',
+        'actividad',
+        'telefono',
+        'correo',
+        'direccion',
+        'descripcionMarca',
+        'objetivoWeb',
+        'identidadVisual',
+        'estiloApariencia',
+        'tipoPaginaWeb',
+        'productosServicios',
+        'seccionesIncluir',
+        'funcionalidadesNecesarias',
+        'dominioPaginaActual',
+        'materialesDisponibles',
+        'referenciasWeb',
+        'redesSociales',
+        'fechaEntregaDeseada',
+        'detallesAdicionales',
+        'enlacesAdjuntos',
+        'estado',
+        'createdAt'
+      ]) && data.keys().hasOnly([
+        'fechaSolicitud',
+        'nombreCompleto',
+        'empresaProyecto',
+        'actividad',
+        'telefono',
+        'correo',
+        'direccion',
+        'descripcionMarca',
+        'objetivoWeb',
+        'identidadVisual',
+        'estiloApariencia',
+        'tipoPaginaWeb',
+        'productosServicios',
+        'seccionesIncluir',
+        'funcionalidadesNecesarias',
+        'dominioPaginaActual',
+        'materialesDisponibles',
+        'referenciasWeb',
+        'redesSociales',
+        'fechaEntregaDeseada',
+        'detallesAdicionales',
+        'enlacesAdjuntos',
+        'estado',
+        'createdAt'
+      ])
+      && isStrLen(data.fechaSolicitud, 1, 40)
+      && isStrLen(data.nombreCompleto, 1, 160)
+      && isStrLen(data.empresaProyecto, 0, 160)
+      && isStrLen(data.actividad, 0, 300)
+      && isStrLen(data.telefono, 7, 60)
+      && isStrLen(data.correo, 5, 160)
+      && isStrLen(data.direccion, 0, 500)
+      && isStrLen(data.descripcionMarca, 0, 2000)
+      && isStrLen(data.objetivoWeb, 0, 300)
+      && isStrLen(data.identidadVisual, 0, 200)
+      && isStrLen(data.estiloApariencia, 0, 400)
+      && isStrLen(data.tipoPaginaWeb, 0, 300)
+      && isStrLen(data.productosServicios, 0, 3000)
+      && isStrLen(data.seccionesIncluir, 0, 600)
+      && isStrLen(data.funcionalidadesNecesarias, 0, 600)
+      && isStrLen(data.dominioPaginaActual, 0, 400)
+      && isStrLen(data.materialesDisponibles, 0, 600)
+      && isStrLen(data.referenciasWeb, 0, 2000)
+      && isStrLen(data.redesSociales, 0, 1000)
+      && isStrLen(data.fechaEntregaDeseada, 0, 40)
+      && isStrLen(data.detallesAdicionales, 0, 3000)
+      && isStrLen(data.enlacesAdjuntos, 0, 2000)
+      && data.estado in ['Nueva', 'En revisión', 'Propuesta enviada', 'Completada']
+      && data.createdAt is timestamp;
+    }
+
+    match /solicitudes/{solicitudId} {
+      allow get: if isAdmin() && isValidId(solicitudId);
+      allow list: if isAdmin();
+      allow create: if isValidId(solicitudId)
+        && isValidSolicitud(incoming())
+        && incoming().estado == 'Nueva'
+        && incoming().createdAt == request.time;
+      allow update: if isAdmin()
+        && isValidId(solicitudId)
+        && isValidSolicitud(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().diff(existing()).affectedKeys().hasOnly(['estado']);
+      allow delete: if isAdmin() && isValidId(solicitudId);
+    }
+
+    match /admins/{adminId} {
+      allow get: if isSignedIn() && request.auth.uid == adminId;
+      allow list, create, update, delete: if false;
+    }
+  }
+}
